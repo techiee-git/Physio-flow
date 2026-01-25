@@ -1,0 +1,17 @@
+node_modules/
+build/
+dist/
+.env
+.DS_Store
+.vscode/
+uploads/
+*.log
+coverage/
+.parcel-cache/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+Thumbs.db
+.idea/
+.cache/
