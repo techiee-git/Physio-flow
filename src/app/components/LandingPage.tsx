@@ -1,0 +1,603 @@
+'use client'
+
+import { motion } from "framer-motion"
+import { useTheme } from "./ThemeProvider"
+
+interface LandingPageProps {
+    onGetStarted: () => void
+}
+
+export default function LandingPage({ onGetStarted }: LandingPageProps) {
+    const { theme, toggleTheme } = useTheme()
+    const isDark = theme === "dark"
+
+    // Colors matching the login page theme
+    const colors = {
+        light: {
+            bg: "from-slate-100 via-slate-50 to-slate-100",
+            card: "bg-white/90",
+            cardBorder: "border-slate-200",
+            text: "text-slate-900",
+            textSecondary: "text-slate-600",
+            inputBg: "bg-slate-100/50",
+            inputBorder: "border-slate-300",
+        },
+        dark: {
+            bg: "from-slate-900 via-slate-800 to-slate-900",
+            card: "bg-slate-800/90",
+            cardBorder: "border-white/10",
+            text: "text-white",
+            textSecondary: "text-slate-400",
+            inputBg: "bg-slate-700/50",
+            inputBorder: "border-slate-600",
+        },
+    }
+
+    const c = isDark ? colors.dark : colors.light
+
+    const features = [
+        {
+            icon: (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+            ),
+            title: "AI Pose Detection",
+            description: "Real-time skeletal tracking ensures correct exercise form with instant accuracy feedback.",
+        },
+        {
+            icon: (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            ),
+            title: "Personalized Plans",
+            description: "Custom treatment and nutrition plans tailored to your specific recovery goals.",
+        },
+        {
+            icon: (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 20V10M12 20V4M6 20v-6"></path>
+                </svg>
+            ),
+            title: "Progress Analytics",
+            description: "Comprehensive dashboards with detailed insights into your recovery journey.",
+        },
+        {
+            icon: (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+            ),
+            title: "Instant Feedback",
+            description: "Get real-time corrections during exercise sessions for optimal results.",
+        },
+        {
+            icon: (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            ),
+            title: "Doctor Connect",
+            description: "Secure messaging and video calls with your healthcare providers.",
+        },
+        {
+            icon: (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            ),
+            title: "Goal Tracking",
+            description: "Set recovery milestones and celebrate achievements as you progress.",
+        },
+    ]
+
+    const testimonials = [
+        {
+            quote: "PhysioFlow transformed my recovery journey. The AI feedback helped me maintain proper form even without a therapist present.",
+            author: "Sarah Mitchell",
+            role: "Knee Surgery Recovery",
+        },
+        {
+            quote: "As a physiotherapist, this platform allows me to monitor my patients' progress remotely while ensuring they exercise correctly.",
+            author: "Dr. James Chen",
+            role: "Senior Physiotherapist",
+        },
+        {
+            quote: "The personalized treatment plan and daily exercises helped me recover from my sports injury 40% faster than expected.",
+            author: "Michael Torres",
+            role: "Professional Athlete",
+        },
+    ]
+
+    return (
+        <div className={`min-h-screen bg-gradient-to-br ${c.bg} transition-colors duration-500`}>
+            {/* Navigation */}
+            <motion.nav
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 ${isDark ? 'bg-slate-900/90' : 'bg-white/90'} backdrop-blur-xl ${c.cardBorder} border-b`}
+            >
+                <div className="max-w-6xl mx-auto flex items-center justify-between">
+                    <motion.div className="flex items-center gap-3" whileHover={{ scale: 1.02 }}>
+                        <div className="p-2.5 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-400 shadow-lg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <span className={`text-2xl font-bold ${c.text}`}>
+                            Physio<span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Flow</span>
+                        </span>
+                    </motion.div>
+
+                    <div className="flex items-center gap-4">
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={toggleTheme}
+                            className={`p-2.5 rounded-xl ${c.card} ${c.cardBorder} border shadow-sm hover:shadow-md transition-shadow`}
+                        >
+                            {isDark ? (
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                </svg>
+                            ) : (
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-500">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                </svg>
+                            )}
+                        </motion.button>
+                    </div>
+                </div>
+            </motion.nav>
+
+            {/* Hero Section */}
+            <section className="relative min-h-screen flex items-center justify-center pt-20 px-4 overflow-hidden">
+                {/* Background gradient orbs */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.1, 1],
+                            opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{ duration: 8, repeat: Infinity }}
+                        className="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] rounded-full bg-gradient-radial from-cyan-500/20 to-transparent"
+                    />
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.15, 1],
+                            opacity: [0.2, 0.4, 0.2],
+                        }}
+                        transition={{ duration: 10, repeat: Infinity, delay: 2 }}
+                        className="absolute -bottom-1/4 -right-1/4 w-[700px] h-[700px] rounded-full bg-gradient-radial from-teal-500/20 to-transparent"
+                    />
+                </div>
+
+                <div className="max-w-5xl mx-auto text-center relative z-10">
+                    {/* Badge */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className={`inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-10 ${isDark ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-cyan-500/10 border border-cyan-500/20'}`}
+                    >
+                        <motion.div
+                            animate={{ rotate: [0, 15, -15, 0] }}
+                            transition={{ duration: 3, repeat: Infinity }}
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </motion.div>
+                        <span className="text-sm font-semibold text-cyan-400">
+                            AI-Powered Rehabilitation Platform
+                        </span>
+                    </motion.div>
+
+                    {/* Main Heading */}
+                    <motion.h1
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.1 }}
+                        className={`text-5xl md:text-7xl lg:text-8xl font-extrabold mb-8 leading-[1.05] tracking-tight ${c.text}`}
+                    >
+                        Transform Your
+                        <br />
+                        <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
+                            Recovery Journey
+                        </span>
+                    </motion.h1>
+
+                    {/* Subtitle */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 25 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className={`text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed ${c.textSecondary}`}
+                    >
+                        Experience personalized physiotherapy with real-time AI pose detection,
+                        custom treatment plans, and seamless doctor-patient collaboration.
+                    </motion.p>
+
+                    {/* CTA Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 25 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+                    >
+                        <motion.button
+                            whileHover={{ scale: 1.05, y: -3 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={onGetStarted}
+                            className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-teal-400 text-slate-900 rounded-2xl text-lg font-semibold flex items-center gap-3 transition-all duration-300 shadow-lg hover:shadow-cyan-500/25"
+                        >
+                            Get Started Free
+                            <motion.span
+                                animate={{ x: [0, 5, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                            >
+                                →
+                            </motion.span>
+                        </motion.button>
+
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`px-8 py-4 rounded-2xl text-lg font-semibold flex items-center gap-3 hover:shadow-lg transition-all duration-300 ${c.card} ${c.cardBorder} border ${c.text}`}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                            </svg>
+                            Watch Demo
+                        </motion.button>
+                    </motion.div>
+
+                    {/* Trust Badges */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.5 }}
+                        className="flex flex-wrap justify-center items-center gap-8"
+                    >
+                        {[
+                            { icon: "shield", text: "HIPAA Compliant" },
+                            { icon: "users", text: "10K+ Patients" },
+                            { icon: "award", text: "Award Winning" },
+                        ].map((item, i) => (
+                            <motion.div
+                                key={i}
+                                whileHover={{ y: -2 }}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full ${isDark ? 'bg-white/5 border border-white/10' : 'bg-black/5 border border-black/10'}`}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
+                                    {item.icon === "shield" && <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>}
+                                    {item.icon === "users" && <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></>}
+                                    {item.icon === "award" && <><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></>}
+                                </svg>
+                                <span className={`text-sm font-medium ${c.textSecondary}`}>
+                                    {item.text}
+                                </span>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+
+                {/* Scroll Indicator */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.5 }}
+                    className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+                >
+                    <motion.div
+                        animate={{ y: [0, 10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className={`w-6 h-10 border-2 rounded-full flex justify-center pt-2 ${c.cardBorder}`}
+                    >
+                        <motion.div
+                            animate={{ opacity: [1, 0.3, 1] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+                        />
+                    </motion.div>
+                </motion.div>
+            </section>
+
+            {/* Features Section */}
+            <section className={`py-28 px-4 ${isDark ? 'bg-slate-800/50' : 'bg-slate-100/50'}`}>
+                <div className="max-w-6xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-20"
+                    >
+                        <motion.span
+                            className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-cyan-500/10 text-cyan-400"
+                        >
+                            FEATURES
+                        </motion.span>
+                        <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${c.text}`}>
+                            Cutting-Edge Healthcare
+                            <br />
+                            <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Technology</span>
+                        </h2>
+                        <p className={`text-lg max-w-2xl mx-auto ${c.textSecondary}`}>
+                            AI-powered tools combined with medical expertise for exceptional rehabilitation outcomes.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {features.map((feature, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: i * 0.1 }}
+                                whileHover={{ y: -8, scale: 1.02 }}
+                                className={`p-8 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-400 ${c.card} backdrop-blur-xl ${c.cardBorder} border`}
+                            >
+                                <motion.div
+                                    whileHover={{ rotate: [0, -10, 10, 0] }}
+                                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg bg-gradient-to-br from-cyan-500 to-teal-400 text-white"
+                                >
+                                    {feature.icon}
+                                </motion.div>
+                                <h3 className={`text-xl font-bold mb-3 ${c.text}`}>
+                                    {feature.title}
+                                </h3>
+                                <p className={`leading-relaxed ${c.textSecondary}`}>
+                                    {feature.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Stats Section */}
+            <section className="py-20 px-4">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="max-w-5xl mx-auto rounded-3xl p-12 shadow-2xl bg-gradient-to-r from-cyan-500 to-teal-400"
+                >
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                        {[
+                            { value: "98%", label: "Recovery Rate" },
+                            { value: "10K+", label: "Happy Patients" },
+                            { value: "500+", label: "Expert Doctors" },
+                            { value: "24/7", label: "Support" },
+                        ].map((stat, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                            >
+                                <div className="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
+                                    {stat.value}
+                                </div>
+                                <p className="text-slate-800/80 font-medium">{stat.label}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* How It Works */}
+            <section className={`py-28 px-4 ${isDark ? 'bg-slate-800/50' : 'bg-slate-100/50'}`}>
+                <div className="max-w-5xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-20"
+                    >
+                        <span className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-teal-500/10 text-teal-400">
+                            HOW IT WORKS
+                        </span>
+                        <h2 className={`text-4xl md:text-5xl font-bold ${c.text}`}>
+                            Three Simple <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Steps</span>
+                        </h2>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-3 gap-10 relative">
+                        {/* Connecting Line */}
+                        <div className="hidden md:block absolute top-[60px] left-[16%] right-[16%] h-1 rounded-full opacity-30 bg-gradient-to-r from-cyan-500 to-teal-400" />
+
+                        {[
+                            { step: "01", title: "Create Account", description: "Sign up and complete your health profile.", iconPath: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" },
+                            { step: "02", title: "Connect with Doctor", description: "Get matched with a specialist for your plan.", iconPath: "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" },
+                            { step: "03", title: "Start Exercising", description: "Follow AI-guided sessions with real-time feedback.", iconPath: "M22 12h-4l-3 9L9 3l-3 9H2" },
+                        ].map((item, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.2 }}
+                                className="text-center relative z-10"
+                            >
+                                <motion.div
+                                    whileHover={{ scale: 1.1, rotate: 5 }}
+                                    className="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br from-cyan-500 to-teal-400 shadow-lg shadow-cyan-500/30"
+                                >
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                        <path d={item.iconPath}></path>
+                                    </svg>
+                                </motion.div>
+                                <div className={`text-6xl font-black absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 opacity-20 ${isDark ? 'text-white/10' : 'text-black/10'}`}>
+                                    {item.step}
+                                </div>
+                                <h3 className={`text-xl font-bold mb-2 relative z-10 ${c.text}`}>
+                                    {item.title}
+                                </h3>
+                                <p className={`relative z-10 ${c.textSecondary}`}>
+                                    {item.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Testimonials */}
+            <section className="py-28 px-4">
+                <div className="max-w-6xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <span className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-cyan-500/10 text-cyan-400">
+                            TESTIMONIALS
+                        </span>
+                        <h2 className={`text-4xl md:text-5xl font-bold ${c.text}`}>
+                            Trusted by <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Thousands</span>
+                        </h2>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {testimonials.map((testimonial, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                whileHover={{ y: -5 }}
+                                className={`p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all ${c.card} backdrop-blur-xl ${c.cardBorder} border`}
+                            >
+                                <div className="flex gap-1 mb-5">
+                                    {[...Array(5)].map((_, j) => (
+                                        <svg key={j} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-400">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    ))}
+                                </div>
+                                <p className={`text-lg italic mb-6 leading-relaxed ${c.textSecondary}`}>
+                                    &quot;{testimonial.quote}&quot;
+                                </p>
+                                <div>
+                                    <p className={`font-bold ${c.text}`}>
+                                        {testimonial.author}
+                                    </p>
+                                    <p className={`text-sm ${c.textSecondary}`}>
+                                        {testimonial.role}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className={`py-28 px-4 ${isDark ? 'bg-slate-800/50' : 'bg-slate-100/50'}`}>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="max-w-4xl mx-auto text-center"
+                >
+                    <motion.div
+                        animate={{
+                            boxShadow: [
+                                "0 0 0 0 rgba(6, 182, 212, 0.4)",
+                                "0 0 0 30px rgba(6, 182, 212, 0)",
+                            ],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-10 bg-gradient-to-br from-cyan-500 to-teal-400"
+                    >
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </motion.div>
+
+                    <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${c.text}`}>
+                        Ready to Start Your
+                        <br />
+                        <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Recovery Journey?</span>
+                    </h2>
+                    <p className={`text-lg mb-10 max-w-xl mx-auto ${c.textSecondary}`}>
+                        Join thousands of patients who have transformed their rehabilitation experience with PhysioFlow.
+                    </p>
+
+                    <motion.button
+                        whileHover={{ scale: 1.05, y: -3 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={onGetStarted}
+                        className="px-12 py-5 text-slate-900 rounded-2xl text-xl font-bold inline-flex items-center gap-3 mb-8 bg-gradient-to-r from-cyan-500 to-teal-400 shadow-lg shadow-cyan-500/40"
+                    >
+                        Get Started Now
+                        <span>→</span>
+                    </motion.button>
+
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {["Free 14-day trial", "No credit card", "Cancel anytime"].map((text, i) => (
+                            <span key={i} className={`flex items-center gap-2 text-sm ${c.textSecondary}`}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-500">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                {text}
+                            </span>
+                        ))}
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* Footer */}
+            <footer className={`py-12 px-4 ${isDark ? 'bg-slate-900' : 'bg-white'} ${c.cardBorder} border-t`}>
+                <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500 to-teal-400">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <span className={`text-xl font-bold ${c.text}`}>
+                            Physio<span className="text-cyan-400">Flow</span>
+                        </span>
+                    </div>
+                    <p className={`text-sm ${c.textSecondary}`}>
+                        © 2024 PhysioFlow. All rights reserved.
+                    </p>
+                    <div className="flex gap-6">
+                        {["Privacy", "Terms", "Contact"].map((link) => (
+                            <a
+                                key={link}
+                                href="#"
+                                className={`text-sm hover:underline transition-all ${c.textSecondary}`}
+                            >
+                                {link}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </footer>
+        </div>
+    )
+}

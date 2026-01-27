@@ -1,5 +1,14 @@
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useRouter } from 'next/navigation'
+import LandingPage from './components/LandingPage'
 
 export default function Home() {
-  redirect('/login')
+    const router = useRouter()
+
+    const handleGetStarted = () => {
+        router.push('/login')
+    }
+
+    return <LandingPage onGetStarted={handleGetStarted} />
 }
