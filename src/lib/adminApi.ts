@@ -255,14 +255,11 @@ export async function addPatient(patient: { name: string; email: string; phone?:
 
 // Assign Doctor to Patient
 export async function assignDoctor(patientId: string, doctorId: string): Promise<{ success: boolean }> {
-    // Remove existing assignment
-    await supabase.from('assignments').delete().eq('patient_id', patientId)
-
-    // Create new assignment
-    const { error } = await supabase.from('assignments').insert({
-        doctor_id: doctorId,
-        patient_id: patientId
-    })
+    // Update the doctor_id column on the users table
+    const { error } = await supabase
+        .from('users')
+        .update({ doctor_id: doctorId || null })
+        .eq('id', patientId)
 
     return { success: !error }
 }
