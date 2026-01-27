@@ -13,6 +13,8 @@ export default function SignupPage() {
         password: '',
         confirmPassword: '',
         phone: '',
+        age: '',
+        injury: '',
         role: 'patient' as 'admin' | 'doctor' | 'patient'
     })
     const [showPassword, setShowPassword] = useState(false)
@@ -46,7 +48,17 @@ export default function SignupPage() {
         setLoading(true)
 
         try {
-            await signUp(formData.email, formData.password, formData.name, formData.role)
+            await signUp(
+                formData.email,
+                formData.password,
+                formData.name,
+                formData.role,
+                formData.role === 'patient' ? {
+                    phone: formData.phone,
+                    age: formData.age ? parseInt(formData.age) : null,
+                    injury: formData.injury
+                } : { phone: formData.phone }
+            )
             setSuccess('Registration successful! Redirecting...')
 
             setTimeout(() => {
@@ -156,6 +168,50 @@ export default function SignupPage() {
                             className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 disabled:opacity-50 transition-all"
                         />
                     </div>
+
+                    {/* Patient-specific fields */}
+                    {formData.role === 'patient' && (
+                        <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg space-y-3">
+                            <p className="text-xs text-cyan-400 font-medium">🩹 Patient Information</p>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-medium text-slate-300">Age</label>
+                                    <input
+                                        type="number"
+                                        name="age"
+                                        placeholder="25"
+                                        value={formData.age}
+                                        onChange={handleChange}
+                                        disabled={loading}
+                                        className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 disabled:opacity-50 transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-xs font-medium text-slate-300">Injury</label>
+                                    <select
+                                        name="injury"
+                                        value={formData.injury}
+                                        onChange={handleChange}
+                                        disabled={loading}
+                                        className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 disabled:opacity-50 transition-all"
+                                    >
+                                        <option value="">Select...</option>
+                                        <option value="Knee Pain">Knee Pain</option>
+                                        <option value="Back Pain">Back Pain</option>
+                                        <option value="Shoulder">Shoulder</option>
+                                        <option value="Neck Pain">Neck Pain</option>
+                                        <option value="Hip Pain">Hip Pain</option>
+                                        <option value="Ankle">Ankle</option>
+                                        <option value="Post Surgery">Post Surgery</option>
+                                        <option value="Sports Injury">Sports</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-slate-300">Password</label>

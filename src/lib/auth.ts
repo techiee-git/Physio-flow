@@ -22,7 +22,12 @@ export async function signUp(
     email: string,
     password: string,
     name: string,
-    role: 'admin' | 'doctor' | 'patient'
+    role: 'admin' | 'doctor' | 'patient',
+    additionalData?: {
+        phone?: string
+        age?: number | null
+        injury?: string
+    }
 ) {
     // Check if email already exists
     const { data: existing } = await supabase
@@ -46,7 +51,10 @@ export async function signUp(
         email,
         name,
         role,
-        password: hashedPassword
+        password: hashedPassword,
+        phone: additionalData?.phone || null,
+        age: additionalData?.age || null,
+        injury: additionalData?.injury || null
     })
 
     if (error) throw error
