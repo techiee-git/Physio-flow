@@ -54,7 +54,9 @@ export default function DoctorDashboard() {
 
     // Form states
     const [newExercise, setNewExercise] = useState({ name: '', description: '', duration_seconds: 60, difficulty: 'medium', video_url: '' })
-    const [assignForm, setAssignForm] = useState({ exercise_id: '', reps_per_set: 10, sets: 3, notes: '' })
+    const [assignForm, setAssignForm] = useState({ exercise_name: '', reps_per_set: 10, sets: 3, notes: '' })
+    const [assignVideoFile, setAssignVideoFile] = useState<File | null>(null)
+    const [assigningExercise, setAssigningExercise] = useState(false)
 
     // Video upload states
     const [uploadingVideo, setUploadingVideo] = useState(false)
@@ -164,20 +166,69 @@ export default function DoctorDashboard() {
     }
 
     const assignExercise = async () => {
-        if (!selectedPatient || !assignForm.exercise_id) return
-        const { error } = await supabase.from('patient_exercises').insert([{
-            patient_id: selectedPatient.id,
-            exercise_id: assignForm.exercise_id,
-            assigned_by: user?.id,
-            reps_per_set: assignForm.reps_per_set,
-            sets: assignForm.sets,
-            notes: assignForm.notes
-        }])
-        if (!error) {
-            setShowAssignExercise(false)
-            setSelectedPatient(null)
-            setAssignForm({ exercise_id: '', reps_per_set: 10, sets: 3, notes: '' })
-            fetchData()
+        if (!selectedPatient || !assignForm.exercise_name || !assignVideoFile) return
+
+        setAssigningExercise(true)
+
+        try {
+            // 1. Upload video
+            const fileExt = assignVideoFile.name.split('.').pop()
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('exercise-videos')
+                .upload(fileName, assignVideoFile, { cacheControl: '3600', upsert: false })
+
+            if (uploadError) {
+                console.error('Upload error:', uploadError)
+                setAssigningExercise(false)
+                return
+            }
+
+            // 2. Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('exercise-videos')
+                .getPublicUrl(fileName)
+
+            // 3. Create exercise
+            const { data: exerciseData, error: exerciseError } = await supabase
+                .from('exercises')
+                .insert([{
+                    name: assignForm.exercise_name,
+                    description: assignForm.notes,
+                    video_url: publicUrl,
+                    created_by: user?.id
+                }])
+                .select()
+                .single()
+
+            if (exerciseError || !exerciseData) {
+                console.error('Exercise create error:', exerciseError)
+                setAssigningExercise(false)
+                return
+            }
+
+            // 4. Assign to patient
+            const { error } = await supabase.from('patient_exercises').insert([{
+                patient_id: selectedPatient.id,
+                exercise_id: exerciseData.id,
+                assigned_by: user?.id,
+                reps_per_set: assignForm.reps_per_set,
+                sets: assignForm.sets,
+                notes: assignForm.notes
+            }])
+
+            if (!error) {
+                setShowAssignExercise(false)
+                setSelectedPatient(null)
+                setAssignForm({ exercise_name: '', reps_per_set: 10, sets: 3, notes: '' })
+                setAssignVideoFile(null)
+                fetchData()
+            }
+        } catch (err) {
+            console.error('Error assigning exercise:', err)
+        } finally {
+            setAssigningExercise(false)
         }
     }
 
@@ -775,17 +826,53 @@ export default function DoctorDashboard() {
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Select Exercise</label>
-                                    <select
-                                        value={assignForm.exercise_id}
-                                        onChange={e => setAssignForm({ ...assignForm, exercise_id: e.target.value })}
+                                    <label className="block text-sm font-medium mb-2">Exercise Name</label>
+                                    <input
+                                        type="text"
+                                        value={assignForm.exercise_name}
+                                        onChange={e => setAssignForm({ ...assignForm, exercise_name: e.target.value })}
                                         className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500"
-                                    >
-                                        <option value="">Choose an exercise...</option>
-                                        {exercises.map(ex => (
-                                            <option key={ex.id} value={ex.id}>{ex.name}</option>
-                                        ))}
-                                    </select>
+                                        placeholder="e.g. Knee Stretch, Arm Raise..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Upload Exercise Video</label>
+                                    <div className="p-4 border-2 border-dashed border-white/20 rounded-xl text-center hover:border-cyan-500/50 transition-all cursor-pointer">
+                                        <input
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={e => {
+                                                const file = e.target.files?.[0]
+                                                if (file) setAssignVideoFile(file)
+                                            }}
+                                            className="hidden"
+                                            id="assign-video-upload"
+                                        />
+                                        <label htmlFor="assign-video-upload" className="cursor-pointer">
+                                            {assignVideoFile ? (
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <span className="text-2xl">🎬</span>
+                                                    <span className="text-cyan-400">{assignVideoFile.name}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            setAssignVideoFile(null)
+                                                        }}
+                                                        className="text-red-400 hover:text-red-300 ml-2"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <span className="text-3xl block mb-2">📹</span>
+                                                    <span className="text-slate-400">Click to browse video</span>
+                                                    <p className="text-xs text-slate-500 mt-1">MP4, WebM, MOV</p>
+                                                </div>
+                                            )}
+                                        </label>
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
@@ -831,9 +918,10 @@ export default function DoctorDashboard() {
                                 </button>
                                 <button
                                     onClick={assignExercise}
-                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all"
+                                    disabled={assigningExercise || !assignForm.exercise_name || !assignVideoFile}
+                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Assign
+                                    {assigningExercise ? 'Uploading...' : 'Assign'}
                                 </button>
                             </div>
                         </div>

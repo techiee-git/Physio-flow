@@ -192,28 +192,21 @@ export async function fetchPatients(): Promise<Patient[]> {
 
     if (!patients) return []
 
-    // Get doctor assignments
+    // Get doctor names for assigned patients
     const patientsWithDoctors = await Promise.all(
         patients.map(async (patient) => {
-            const { data: assignment } = await supabase
-                .from('assignments')
-                .select('doctor_id')
-                .eq('patient_id', patient.id)
-                .single()
-
             let doctor_name = 'Unassigned'
-            if (assignment?.doctor_id) {
+            if (patient.doctor_id) {
                 const { data: doctor } = await supabase
                     .from('users')
                     .select('name')
-                    .eq('id', assignment.doctor_id)
+                    .eq('id', patient.doctor_id)
                     .single()
                 doctor_name = doctor?.name || 'Unknown'
             }
 
             return {
                 ...patient,
-                doctor_id: assignment?.doctor_id,
                 doctor_name
             }
         })
