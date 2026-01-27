@@ -120,10 +120,14 @@ export async function fetchDoctors(): Promise<Doctor[]> {
     // Get patient counts
     const doctorsWithCounts = await Promise.all(
         doctors.map(async (doc) => {
-            const { count } = await supabase
+            const { count, error } = await supabase
                 .from('assignments')
                 .select('id', { count: 'exact' })
                 .eq('doctor_id', doc.id)
+
+            if (error) {
+                console.error(`Error fetching patient count for doctor ${doc.id}:`, error)
+            }
 
             return {
                 ...doc,

@@ -65,7 +65,9 @@ export default function AdminDashboard() {
             setPatientGrowth(growthData)
             setTopDoctors(topData)
         } else if (activeTab === 'doctors') {
-            setDoctors(await fetchDoctors())
+            const docs = await fetchDoctors()
+            console.log('Fetched doctors:', docs)
+            setDoctors(docs)
         } else if (activeTab === 'patients') {
             setPatients(await fetchPatients())
             setDoctors(await fetchDoctors())
