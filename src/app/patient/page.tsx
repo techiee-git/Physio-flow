@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { getCurrentUser, signOut, User } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
+import Sidebar from '../components/Sidebar'
 import ThemeToggle from '../components/ThemeToggle'
+import Link from 'next/link'
 
 interface Exercise {
     id: string
@@ -27,6 +29,10 @@ interface PatientExercise {
 
 export default function PatientDashboard() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    // Default to 'dashboard' if no tab param is present
+    const activeTab = searchParams.get('tab') || 'dashboard'
+
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
     const [assignments, setAssignments] = useState<PatientExercise[]>([])
@@ -107,7 +113,7 @@ export default function PatientDashboard() {
             .eq('id', user.id)
             .single()
 
-        setDietPlan(data?.diet_plan || 'Remember to stay hydrated and eat balanced meals to support your recovery!')
+        setDietPlan(data?.diet_plan || 'Stay hydrated and eat balanced meals.')
     }
 
     const handleLogout = async () => {
@@ -115,185 +121,190 @@ export default function PatientDashboard() {
         router.push('/login')
     }
 
-    const startSession = () => {
-        router.push('/exercise')
-    }
-
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-                <span className="w-8 h-8 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></span>
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-cyan-500"></div>
             </div>
         )
     }
 
-    return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300">
-            {/* Header */}
-            <header className="flex justify-between items-center px-8 py-5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 sticky top-0 z-50">
-                <div className="flex items-center gap-3">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                    </svg>
-                    <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
-                        PhysioFlow
-                    </span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <ThemeToggle />
-                    <button
-                        onClick={handleLogout}
-                        className="px-5 py-2 border border-slate-200 dark:border-white/20 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 dark:hover:border-red-500 hover:text-red-500 dark:hover:text-red-400 transition-all"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </header>
+    const pendingExercises = assignments.filter(e => e.status !== 'completed').length
+    const progressPercentage = progress.total ? Math.round((progress.completed / progress.total) * 100) : 0
 
-            {/* Main */}
-            <main className="max-w-6xl mx-auto px-8 py-10">
-                <div className="mb-10">
-                    <h1 className="text-3xl font-bold mb-2">Welcome, {user?.name}!</h1>
-                    <div className="flex items-center gap-3">
-                        <span className="inline-block px-4 py-1.5 bg-emerald-500/15 border border-emerald-500/30 rounded-full text-emerald-400 text-sm font-semibold uppercase tracking-wide">
-                            Patient Dashboard
-                        </span>
-                        {doctor && (
-                            <span className="text-slate-400 text-sm">
-                                👨‍⚕️ Assigned to <span className="text-cyan-400">{doctor.name}</span>
-                            </span>
-                        )}
-                    </div>
+    // Render helper for the main dashboard view
+    const renderDashboard = () => (
+        <div className="space-y-6">
+            {/* Recovery Progress - Large Card */}
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 absolute inset-0 opacity-50"></div>
+
+                <div className="relative z-10 flex-1 text-center md:text-left">
+                    <h2 className="text-xl font-bold mb-2">Recovery Progress</h2>
+                    <p className="text-slate-500 dark:text-slate-400 max-w-sm">
+                        You're making excellent progress! Keep following your treatment plan to reach full recovery.
+                    </p>
                 </div>
 
-                {/* Exercise Session Card */}
-                {
-                    assignments.length > 0 ? (
-                        <div className="mb-8 p-8 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 border border-cyan-500/30 rounded-2xl">
-                            <div className="flex items-start justify-between mb-6">
-                                <div>
-                                    <h2 className="text-2xl font-bold mb-2">Your Exercise Plan</h2>
-                                    <p className="text-slate-400">
-                                        {assignments.length} exercise{assignments.length > 1 ? 's' : ''} assigned by your doctor
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={startSession}
-                                    className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-xl text-slate-900 font-bold flex items-center gap-3 hover:shadow-lg hover:shadow-cyan-500/25 hover:-translate-y-1 transition-all"
-                                >
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <polygon points="5,3 19,12 5,21"></polygon>
-                                    </svg>
-                                    Start Session
-                                </button>
-                            </div>
-
-                            {/* Exercise List */}
-                            <div className="grid gap-4">
-                                {assignments.map((assignment, index) => (
-                                    <div
-                                        key={assignment.id}
-                                        className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-white/5"
-                                    >
-                                        <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400 font-bold">
-                                            {index + 1}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-semibold">{assignment.exercise?.name || 'Exercise'}</h3>
-                                            <p className="text-sm text-slate-400">
-                                                {assignment.sets} sets × {assignment.reps_per_set} reps
-                                                {assignment.notes && ` • ${assignment.notes}`}
-                                            </p>
-                                        </div>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${assignment.exercise?.difficulty === 'easy'
-                                            ? 'bg-green-500/20 text-green-400'
-                                            : assignment.exercise?.difficulty === 'hard'
-                                                ? 'bg-red-500/20 text-red-400'
-                                                : 'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
-                                            {assignment.exercise?.difficulty || 'medium'}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="mb-8 p-8 bg-slate-800/50 border border-white/10 rounded-2xl text-center">
-                            <div className="w-20 h-20 bg-slate-700/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-slate-500">
-                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                                </svg>
-                            </div>
-                            <h3 className="text-xl font-semibold mb-2">No Exercises Assigned Yet</h3>
-                            <p className="text-slate-400 mb-4">
-                                Your doctor will assign exercises for you to practice.
-                                Check back later or contact your doctor.
-                            </p>
-                        </div>
-                    )
-                }
-
-                {/* Additional Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* My Progress */}
-                    <div className="p-6 bg-slate-800/80 backdrop-blur-xl border border-white/10 rounded-2xl">
-                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-4">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M18 20V10M12 20V4M6 20v-6"></path>
-                            </svg>
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2">My Progress</h3>
-                        <div className="flex items-end gap-2 mb-2">
-                            <span className="text-3xl font-bold text-white">{progress.completed}</span>
-                            <span className="text-slate-400 mb-1">/ {progress.total} exercises</span>
-                        </div>
-                        <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-purple-500 transition-all duration-500"
-                                style={{ width: `${progress.total ? (progress.completed / progress.total) * 100 : 0}%` }}
-                            ></div>
+                <div className="relative z-10 flex flex-col items-center">
+                    <div className="relative w-40 h-40 flex items-center justify-center">
+                        <svg className="transform -rotate-90 w-full h-full">
+                            <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-slate-100 dark:text-slate-700" />
+                            <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="12" fill="transparent" strokeDasharray={440} strokeDashoffset={440 - (440 * progressPercentage) / 100} strokeLinecap="round" className="text-cyan-500 transition-all duration-1000 ease-out" />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-4xl font-bold text-slate-900 dark:text-white">{progressPercentage}%</span>
+                            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Complete</span>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    {/* My Doctor */}
-                    <div className="p-6 bg-slate-800/80 backdrop-blur-xl border border-white/10 rounded-2xl">
-                        <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-4">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
+            {/* Dashboard Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Link href="/exercise" className="block group">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-white/5 h-full hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer relative overflow-hidden">
+                        <div className="w-12 h-12 rounded-2xl bg-purple-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-purple-500/20">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                         </div>
-                        <h3 className="text-lg font-semibold mb-2">My Doctor</h3>
-                        {doctor ? (
-                            <div className="space-y-2 text-sm text-slate-300">
-                                <p className="font-medium text-white text-base">{doctor.name}</p>
-                                <p className="flex items-center gap-2">
-                                    <span>📧</span> {doctor.email}
-                                </p>
-                                <p className="flex items-center gap-2">
-                                    <span>📞</span> {doctor.phone || 'No phone provided'}
-                                </p>
-                            </div>
-                        ) : (
-                            <p className="text-slate-400 text-sm">No doctor assigned yet.</p>
-                        )}
-                    </div>
-
-                    {/* Diet Plan */}
-                    <div className="p-6 bg-slate-800/80 backdrop-blur-xl border border-white/10 rounded-2xl">
-                        <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                            </svg>
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2">Diet Plan</h3>
-                        <p className="text-slate-300 text-sm leading-relaxed">
-                            {dietPlan}
+                        <h3 className="font-bold text-lg mb-1 group-hover:text-purple-500 transition-colors">Today's Exercise</h3>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">
+                            {pendingExercises} exercise{pendingExercises !== 1 && 's'} pending
                         </p>
                     </div>
+                </Link>
+
+                <Link href="/patient?tab=diet" className="block group">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-white/5 h-full hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer">
+                        <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/20">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16.5 12c.3 2 1.5 3.5 1.5 6a5.5 5.5 0 0 1-11 0c0-3.5 2.5-4 5-8"></path><path d="M12 4v4"></path></svg>
+                        </div>
+                        <h3 className="font-bold text-lg mb-1 group-hover:text-emerald-500 transition-colors">Diet Plan</h3>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm truncate">
+                            View your meal plan
+                        </p>
+                    </div>
+                </Link>
+
+                <Link href="/patient?tab=progress" className="block group">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-white/5 h-full hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer">
+                        <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-orange-500/20">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        </div>
+                        <h3 className="font-bold text-lg mb-1 group-hover:text-orange-500 transition-colors">My Progress</h3>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">
+                            Track improvements
+                        </p>
+                    </div>
+                </Link>
+
+                <div className="bg-gradient-to-br from-cyan-400 to-teal-400 p-6 rounded-3xl shadow-sm h-full text-white relative overflow-hidden group hover:shadow-cyan-500/20 hover:shadow-lg transition-all">
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 text-white">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </div>
+                    <h3 className="font-bold text-lg mb-1">Call Doctor</h3>
+                    <p className="text-white/80 text-sm mb-1">
+                        {doctor ? `Speak to ${doctor.name}` : 'Contact Support'}
+                    </p>
                 </div>
-            </main >
-        </div >
+            </div>
+        </div>
+    )
+
+    // Render helper for diet plan view
+    const renderDietPlan = () => (
+        <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16.5 12c.3 2 1.5 3.5 1.5 6a5.5 5.5 0 0 1-11 0c0-3.5 2.5-4 5-8"></path><path d="M12 4v4"></path></svg></span>
+                Your Diet Plan
+            </h2>
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-white/5">
+                <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line">
+                    {dietPlan}
+                </p>
+            </div>
+        </div>
+    )
+
+    // Render helper for progress view
+    const renderProgress = () => (
+        <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span className="p-2 bg-orange-500/10 rounded-lg text-orange-500"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
+                My Progress
+            </h2>
+            <div className="grid gap-6">
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-white/5">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-bold text-lg text-slate-900 dark:text-white">Overall Completion</h3>
+                        <span className="text-3xl font-bold text-cyan-500">{progressPercentage}%</span>
+                    </div>
+                    <div className="w-full h-4 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-cyan-500 to-teal-400 transition-all duration-1000" style={{ width: `${progressPercentage}%` }}></div>
+                    </div>
+                    <p className="mt-4 text-slate-500 dark:text-slate-400">
+                        You have completed <span className="font-bold text-slate-900 dark:text-white">{progress.completed}</span> out of <span className="font-bold text-slate-900 dark:text-white">{progress.total}</span> assigned exercises.
+                    </p>
+                </div>
+
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-white/5">
+                    <h3 className="font-bold text-lg mb-4 text-slate-900 dark:text-white">Exercise History</h3>
+                    {assignments.length > 0 ? (
+                        <div className="space-y-4">
+                            {assignments.map((assignment, i) => (
+                                <div key={assignment.id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-white/5 hover:border-cyan-500/20 transition-colors">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-2 h-12 rounded-full ${assignment.status === 'completed' ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}`}></div>
+                                        <div>
+                                            <p className="font-semibold text-slate-900 dark:text-white">{assignment.exercise?.name}</p>
+                                            <p className="text-xs text-slate-500">{assignment.sets} sets • {assignment.reps_per_set} reps</p>
+                                        </div>
+                                    </div>
+                                    <span className={`px-3 py-1 rounded-lg text-xs font-bold ${assignment.status === 'completed'
+                                            ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                                            : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                                        }`}>
+                                        {assignment.status === 'completed' ? 'Completed' : 'Pending'}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-10 text-slate-500">
+                            No activity recorded yet.
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+
+    return (
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300 font-sans">
+            <Sidebar user={user} onLogout={handleLogout} />
+
+            <main className="ml-64 p-8 transition-all duration-300">
+                {/* Top Header Area */}
+                <div className="flex justify-between items-start mb-8">
+                    <div>
+                        <h1 className="text-3xl font-bold mb-1">
+                            {activeTab === 'dashboard' && `Welcome Back, ${user?.name?.split(' ')[0]}!`}
+                            {activeTab === 'diet' && 'Diet Plan'}
+                            {activeTab === 'progress' && 'Progress Tracking'}
+                        </h1>
+                        <p className="text-slate-500 dark:text-slate-400">
+                            {activeTab === 'dashboard' && 'Keep up the great work on your recovery journey.'}
+                            {activeTab === 'diet' && 'A personalized nutrition plan for your recovery.'}
+                            {activeTab === 'progress' && 'Visualize your improvement over time.'}
+                        </p>
+                    </div>
+                    <ThemeToggle />
+                </div>
+
+                {activeTab === 'dashboard' && renderDashboard()}
+                {activeTab === 'diet' && renderDietPlan()}
+                {activeTab === 'progress' && renderProgress()}
+            </main>
+        </div>
     )
 }

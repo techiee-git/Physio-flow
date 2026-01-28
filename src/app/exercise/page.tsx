@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCurrentUser, signOut, User } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
+import Sidebar from '../components/Sidebar'
 
 interface Exercise {
     id: string
@@ -247,11 +248,6 @@ export default function ExercisePage() {
         setAssignments(data || [])
     }
 
-    const handleBack = () => {
-        stopSession()
-        router.push('/patient')
-    }
-
     const handleLogout = async () => {
         stopSession()
         await signOut()
@@ -260,7 +256,11 @@ export default function ExercisePage() {
 
     const currentExercise = assignments[currentIndex]?.exercise
 
-    const startSession = async () => {
+    const startSession = async (index?: number) => {
+        if (typeof index === 'number') {
+            setCurrentIndex(index)
+        }
+
         setSessionLoading(true)
         setError('')
         setIsInitializing(true)
@@ -311,7 +311,8 @@ export default function ExercisePage() {
         if (currentIndex < assignments.length - 1) {
             stopSession()
             setCurrentIndex(prev => prev + 1)
-            setIsInitializing(true)
+            // Re-start session automatically for next exercise
+            setTimeout(() => startSession(currentIndex + 1), 100)
         }
     }
 
@@ -319,23 +320,14 @@ export default function ExercisePage() {
         if (currentIndex > 0) {
             stopSession()
             setCurrentIndex(prev => prev - 1)
-            setIsInitializing(true)
+            setTimeout(() => startSession(currentIndex - 1), 100)
         }
     }
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-500">
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-cyan-500"></div>
-            </div>
-        )
-    }
-
-    if (assignments.length === 0) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-8 transition-colors duration-500">
-                <h1 className="text-2xl font-bold mb-4">No Exercises Assigned</h1>
-                <button onClick={handleBack} className="px-6 py-2 bg-slate-800 rounded-xl">← Back</button>
             </div>
         )
     }
@@ -343,9 +335,9 @@ export default function ExercisePage() {
     const currentTarget = assignments[currentIndex]?.reps_per_set || 10
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-500" ref={containerRef}>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-500 font-sans" ref={containerRef}>
             {sessionStarted ? (
-                <div className="fixed inset-0 bg-black">
+                <div className="fixed inset-0 bg-black z-50">
                     <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover -scale-x-100" />
                     <canvas ref={canvasRef} className="absolute inset-0 w-full h-full -scale-x-100" />
 
@@ -373,8 +365,8 @@ export default function ExercisePage() {
 
                     <div className="absolute top-4 left-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-emerald-500/50 rounded-2xl p-6 text-center shadow-2xl dark:shadow-emerald-500/20 z-10 transition-all">
                         <p className="text-xs font-black text-emerald-400 tracking-[0.2em] mb-1">REPS</p>
-                        <p className="text-6xl font-black text-white">{repCount}</p>
-                        <p className="text-xs text-slate-400 mt-1">Goal: {currentTarget}</p>
+                        <p className="text-6xl font-black text-slate-900 dark:text-white">{repCount}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Goal: {currentTarget}</p>
                         {repCount >= currentTarget && (
                             <div className="mt-4 py-2 px-3 bg-emerald-500 text-slate-900 rounded-lg font-black text-xs animate-bounce">
                                 GOAL REACHED! 🎉
@@ -383,14 +375,14 @@ export default function ExercisePage() {
                     </div>
 
                     <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4">
-                        <button onClick={prevExercise} disabled={currentIndex === 0} className="px-6 py-3 bg-slate-800/80 rounded-xl disabled:opacity-30">Previous</button>
-                        <button onClick={stopSession} className="px-8 py-3 bg-red-500/80 rounded-xl font-bold">STOP</button>
+                        <button onClick={prevExercise} disabled={currentIndex === 0} className="px-6 py-3 bg-slate-800/80 text-white rounded-xl disabled:opacity-30 hover:bg-slate-700">Previous</button>
+                        <button onClick={stopSession} className="px-8 py-3 bg-red-500/80 text-white rounded-xl font-bold hover:bg-red-600">STOP</button>
                         <button
                             onClick={nextExercise}
                             disabled={currentIndex === assignments.length - 1 && repCount < currentTarget}
                             className={`px-6 py-3 rounded-xl transition-all ${repCount >= currentTarget
                                 ? 'bg-emerald-500 text-slate-900 font-bold scale-110 shadow-lg shadow-emerald-500/30'
-                                : 'bg-slate-800/80 disabled:opacity-30'
+                                : 'bg-slate-800/80 text-white disabled:opacity-30'
                                 }`}
                         >
                             {currentIndex === assignments.length - 1 ? 'Finish' : 'Next Exercise →'}
@@ -398,17 +390,60 @@ export default function ExercisePage() {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center min-h-screen p-6">
-                    <div className="max-w-md w-full text-center">
-                        <h1 className="text-4xl font-bold mb-2">Ready?</h1>
-                        <p className="text-slate-400 mb-8">{currentExercise?.name}</p>
+                <div className="flex bg-slate-50 dark:bg-slate-900 min-h-screen">
+                    <Sidebar user={user} onLogout={handleLogout} />
+                    <main className="ml-64 p-8 w-full">
+                        <h1 className="text-3xl font-bold mb-8">Your Exercises</h1>
 
                         {error && <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-500 mb-6">{error}</div>}
 
-                        <button onClick={startSession} disabled={sessionLoading} className="w-full py-4 bg-cyan-500 text-slate-900 rounded-2xl font-black text-xl hover:bg-cyan-400 transition-all">
-                            {sessionLoading ? 'STARTING...' : 'START SESSION'}
-                        </button>
-                    </div>
+                        {assignments.length > 0 ? (
+                            <div className="grid gap-4">
+                                {assignments.map((assignment, index) => (
+                                    <div
+                                        key={assignment.id}
+                                        className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 flex items-center justify-between group hover:border-cyan-500/30 transition-all"
+                                    >
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500 font-bold text-lg group-hover:bg-cyan-500 group-hover:text-white transition-all">
+                                                {index + 1}
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-lg mb-1">{assignment.exercise?.name}</h3>
+                                                <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                                                    <span className="flex items-center gap-1">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M2 12h20"></path></svg>
+                                                        {assignment.sets} sets
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                                        {assignment.reps_per_set} reps
+                                                    </span>
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold uppercase ${assignment.exercise?.difficulty === 'easy' ? 'bg-green-500/10 text-green-500' :
+                                                            assignment.exercise?.difficulty === 'hard' ? 'bg-red-500/10 text-red-500' :
+                                                                'bg-yellow-500/10 text-yellow-500'
+                                                        }`}>
+                                                        {assignment.exercise?.difficulty}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={() => startSession(index)}
+                                            className="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                                        >
+                                            Start
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-white/10">
+                                <p className="text-slate-500 dark:text-slate-400 text-lg">No exercises assigned yet.</p>
+                            </div>
+                        )}
+                    </main>
                 </div>
             )}
         </div>

@@ -1,13 +1,39 @@
 'use client'
 
 import { motion } from "framer-motion"
-import ThemeToggle from "./ThemeToggle"
+import { useTheme } from "./ThemeProvider"
 
 interface LandingPageProps {
     onGetStarted: () => void
 }
 
 export default function LandingPage({ onGetStarted }: LandingPageProps) {
+    const { theme, toggleTheme } = useTheme()
+    const isDark = theme === "dark"
+
+    // Colors matching the login page theme
+    const colors = {
+        light: {
+            bg: "from-slate-100 via-slate-50 to-slate-100",
+            card: "bg-white/90",
+            cardBorder: "border-slate-200",
+            text: "text-slate-900",
+            textSecondary: "text-slate-600",
+            inputBg: "bg-slate-100/50",
+            inputBorder: "border-slate-300",
+        },
+        dark: {
+            bg: "from-slate-900 via-slate-800 to-slate-900",
+            card: "bg-slate-800/90",
+            cardBorder: "border-white/10",
+            text: "text-white",
+            textSecondary: "text-slate-400",
+            inputBg: "bg-slate-700/50",
+            inputBorder: "border-slate-600",
+        },
+    }
+
+    const c = isDark ? colors.dark : colors.light
 
     const features = [
         {
@@ -71,34 +97,16 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         },
     ]
 
-    const testimonials = [
-        {
-            quote: "This app revolutionized my recovery after knee surgery. The real-time feedback is a game changer!",
-            author: "Sarah Johnson",
-            role: "Patient"
-        },
-        {
-            quote: "As a physiotherapist, I highly recommend this to my patients for home exercises.",
-            author: "Dr. Mike Chen",
-            role: "Physiotherapist"
-        },
-        {
-            quote: "Easy to use and keeps me motivated. I love seeing my progress every day.",
-            author: "David Williams",
-            role: "Patient"
-        }
-    ]
-
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-500">
+        <div className={`min-h-screen bg-gradient-to-br ${c.bg} transition-colors duration-500`}>
             {/* Navigation */}
             <motion.nav
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 transition-colors duration-500"
+                className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 ${isDark ? 'bg-slate-900/90' : 'bg-white/90'} backdrop-blur-xl ${c.cardBorder} border-b`}
             >
                 <div className="max-w-6xl mx-auto flex items-center justify-between">
                     <motion.div className="flex items-center gap-3" whileHover={{ scale: 1.02 }}>
@@ -107,13 +115,36 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                             </svg>
                         </div>
-                        <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                        <span className={`text-2xl font-bold ${c.text}`}>
                             Physio<span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Flow</span>
                         </span>
                     </motion.div>
 
                     <div className="flex items-center gap-4">
-                        <ThemeToggle />
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={toggleTheme}
+                            className={`p-2.5 rounded-xl ${c.card} ${c.cardBorder} border shadow-sm hover:shadow-md transition-shadow`}
+                        >
+                            {isDark ? (
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                </svg>
+                            ) : (
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-500">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                </svg>
+                            )}
+                        </motion.button>
                     </div>
                 </div>
             </motion.nav>
@@ -146,7 +177,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-10 bg-cyan-500/10 border border-cyan-500/20"
+                        className={`inline-flex items-center gap-2.5 px-5 py-2 rounded-full mb-10 ${isDark ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-cyan-500/10 border border-cyan-500/20'}`}
                     >
                         <motion.div
                             animate={{ rotate: [0, 15, -15, 0] }}
@@ -166,7 +197,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.1 }}
-                        className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-8 leading-[1.05] tracking-tight text-slate-900 dark:text-white"
+                        className={`text-5xl md:text-7xl lg:text-8xl font-extrabold mb-8 leading-[1.05] tracking-tight ${c.text}`}
                     >
                         Transform Your
                         <br />
@@ -180,7 +211,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                         initial={{ opacity: 0, y: 25 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed text-slate-600 dark:text-slate-400"
+                        className={`text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed ${c.textSecondary}`}
                     >
                         Experience personalized physiotherapy with real-time AI pose detection,
                         custom treatment plans, and seamless doctor-patient collaboration.
@@ -208,17 +239,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                             </motion.span>
                         </motion.button>
 
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="px-8 py-4 rounded-2xl text-lg font-semibold flex items-center gap-3 hover:shadow-lg transition-all duration-300 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-white/10 border text-slate-900 dark:text-white"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                            </svg>
-                            Watch Demo
-                        </motion.button>
+
                     </motion.div>
 
                     {/* Stats Section moved to Hero */}
@@ -228,26 +249,29 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                         transition={{ duration: 0.6, delay: 0.5 }}
                         className="mt-12 w-full"
                     >
-                        {[
-                            { icon: "shield", text: "HIPAA Compliant" },
-                            { icon: "users", text: "10K+ Patients" },
-                            { icon: "award", text: "Award Winning" },
-                        ].map((item, i) => (
-                            <motion.div
-                                key={i}
-                                whileHover={{ y: -2 }}
-                                className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/5 border-black/10 dark:bg-white/5 dark:border-white/10 border"
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
-                                    {item.icon === "shield" && <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>}
-                                    {item.icon === "users" && <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></>}
-                                    {item.icon === "award" && <><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></>}
-                                </svg>
-                                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                                    {item.text}
-                                </span>
-                            </motion.div>
-                        ))}
+                        <div className="flex flex-wrap justify-center items-center gap-6">
+                            {[
+                                { value: "98%", label: "Recovery Rate" },
+                                { value: "1K+", label: "Happy Patients" },
+                                { value: "50+", label: "Expert Doctors" },
+                                { value: "24/7", label: "Support" },
+                            ].map((stat, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.1 }}
+                                    whileHover={{ y: -2 }}
+                                    className={`flex flex-col items-center justify-center p-6 rounded-2xl min-w-[140px] backdrop-blur-sm ${isDark ? 'bg-white/5 border border-white/10' : 'bg-black/5 border border-black/10'}`}
+                                >
+                                    <div className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent mb-1">
+                                        {stat.value}
+                                    </div>
+                                    <p className={`font-medium text-sm ${c.textSecondary}`}>{stat.label}</p>
+                                </motion.div>
+                            ))}
+                        </div>
                     </motion.div>
                 </div>
 
@@ -261,7 +285,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                     <motion.div
                         animate={{ y: [0, 10, 0] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="w-6 h-10 border-2 rounded-full flex justify-center pt-2 border-slate-200 dark:border-white/10"
+                        className={`w-6 h-10 border-2 rounded-full flex justify-center pt-2 ${c.cardBorder}`}
                     >
                         <motion.div
                             animate={{ opacity: [1, 0.3, 1] }}
@@ -274,7 +298,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
 
             {/* Features Section */}
             {/* Features Section */}
-            <section className="py-28 px-4 bg-slate-100/50 dark:bg-slate-800/50">
+            <section className={`py-20 px-4 ${isDark ? 'bg-slate-800/50' : 'bg-slate-100/50'}`}>
                 <div className="max-w-6xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -287,12 +311,12 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                         >
                             FEATURES
                         </motion.span>
-                        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
+                        <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${c.text}`}>
                             Cutting-Edge Healthcare
                             <br />
                             <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Technology</span>
                         </h2>
-                        <p className="text-lg max-w-2xl mx-auto text-slate-600 dark:text-slate-400">
+                        <p className={`text-lg max-w-2xl mx-auto ${c.textSecondary}`}>
                             AI-powered tools combined with medical expertise for exceptional rehabilitation outcomes.
                         </p>
                     </motion.div>
@@ -306,7 +330,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: i * 0.1 }}
                                 whileHover={{ y: -8, scale: 1.02 }}
-                                className="p-8 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-400 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-slate-200 dark:border-white/10 border"
+                                className={`p-8 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-400 ${c.card} backdrop-blur-xl ${c.cardBorder} border`}
                             >
                                 <motion.div
                                     whileHover={{ rotate: [0, -10, 10, 0] }}
@@ -314,10 +338,10 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                                 >
                                     {feature.icon}
                                 </motion.div>
-                                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">
+                                <h3 className={`text-xl font-bold mb-3 ${c.text}`}>
                                     {feature.title}
                                 </h3>
-                                <p className="leading-relaxed text-slate-600 dark:text-slate-400">
+                                <p className={`leading-relaxed ${c.textSecondary}`}>
                                     {feature.description}
                                 </p>
                             </motion.div>
@@ -329,8 +353,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
 
 
             {/* How It Works */}
-            {/* How It Works */}
-            <section className="py-28 px-4 bg-slate-100/50 dark:bg-slate-800/50">
+            <section className={`py-20 px-4 ${isDark ? 'bg-slate-800/50' : 'bg-slate-100/50'}`}>
                 <div className="max-w-5xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -341,7 +364,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                         <span className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-teal-500/10 text-teal-400">
                             HOW IT WORKS
                         </span>
-                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
+                        <h2 className={`text-4xl md:text-5xl font-bold ${c.text}`}>
                             Three Simple <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Steps</span>
                         </h2>
                     </motion.div>
@@ -371,13 +394,13 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                                         <path d={item.iconPath}></path>
                                     </svg>
                                 </motion.div>
-                                <div className="text-6xl font-black absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 opacity-20 text-black/10 dark:text-white/10">
+                                <div className={`text-6xl font-black absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 opacity-20 ${isDark ? 'text-white/10' : 'text-black/10'}`}>
                                     {item.step}
                                 </div>
-                                <h3 className="text-xl font-bold mb-2 relative z-10 text-slate-900 dark:text-white">
+                                <h3 className={`text-xl font-bold mb-2 relative z-10 ${c.text}`}>
                                     {item.title}
                                 </h3>
-                                <p className="relative z-10 text-slate-600 dark:text-slate-400">
+                                <p className={`relative z-10 ${c.textSecondary}`}>
                                     {item.description}
                                 </p>
                             </motion.div>
@@ -386,144 +409,83 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 </div>
             </section>
 
-<<<<<<< HEAD
-    {/* Testimonials */ }
-    <section className="py-28 px-4">
-        <div className="max-w-6xl mx-auto">
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center mb-16"
-            >
-                <span className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-cyan-500/10 text-cyan-400">
-                    TESTIMONIALS
-                </span>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
-                    Trusted by <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Thousands</span>
-                </h2>
-            </motion.div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-                {testimonials.map((testimonial, i) => (
+
+            {/* CTA Section */}
+            <section className={`py-20 px-4 ${isDark ? 'bg-slate-800/50' : 'bg-slate-100/50'}`}>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="max-w-4xl mx-auto text-center"
+                >
                     <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                        whileHover={{ y: -5 }}
-                        className="p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-slate-200 dark:border-white/10 border"
+                        animate={{
+                            boxShadow: [
+                                "0 0 0 0 rgba(6, 182, 212, 0.4)",
+                                "0 0 0 30px rgba(6, 182, 212, 0)",
+                            ],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-10 bg-gradient-to-br from-cyan-500 to-teal-400"
                     >
-                        <div className="flex gap-1 mb-5">
-                            {[...Array(5)].map((_, j) => (
-                                <svg key={j} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-400">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                            ))}
-                        </div>
-                        <p className="text-lg italic mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
-                            &quot;{testimonial.quote}&quot;
-                        </p>
-                        <div>
-                            <p className="font-bold text-slate-900 dark:text-white">
-                                {testimonial.author}
-                            </p>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">
-                                {testimonial.role}
-                            </p>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
-        </div>
-    </section>
-
-    {/* CTA Section */ }
-    <section className="py-28 px-4 bg-slate-100/50 dark:bg-slate-800/50">
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
-        >
-            <motion.div
-                animate={{
-                    boxShadow: [
-                        "0 0 0 0 rgba(6, 182, 212, 0.4)",
-                        "0 0 0 30px rgba(6, 182, 212, 0)",
-                    ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-10 bg-gradient-to-br from-cyan-500 to-teal-400"
-            >
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-            </motion.div>
-
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
-                Ready to Start Your
-                <br />
-                <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Recovery Journey?</span>
-            </h2>
-            <p className="text-lg mb-10 max-w-xl mx-auto text-slate-600 dark:text-slate-400">
-                Join thousands of patients who have transformed their rehabilitation experience with PhysioFlow.
-            </p>
-
-            <motion.button
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onGetStarted}
-                className="px-12 py-5 text-slate-900 rounded-2xl text-xl font-bold inline-flex items-center gap-3 mb-8 bg-gradient-to-r from-cyan-500 to-teal-400 shadow-lg shadow-cyan-500/40"
-            >
-                Get Started Now
-                <span>→</span>
-            </motion.button>
-
-            <div className="flex flex-wrap justify-center gap-6">
-                {["Free 14-day trial", "No credit card", "Cancel anytime"].map((text, i) => (
-                    <span key={i} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-500">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                         </svg>
-                        {text}
-                    </span>
-                ))}
-            </div>
-        </motion.div>
-    </section>
+                    </motion.div>
 
-    {/* Footer */ }
-    <footer className="py-12 px-4 bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 border-t">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500 to-teal-400">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                    </svg>
-                </div>
-                <span className="text-xl font-bold text-slate-900 dark:text-white">
-                    Physio<span className="text-cyan-400">Flow</span>
-                </span>
-            </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-                © 2026 PhysioFlow. All rights reserved.
-            </p>
-            <div className="flex gap-6">
-                {["Privacy", "Terms", "Contact"].map((link) => (
-                    <a
-                        key={link}
-                        href="#"
-                        className="text-sm hover:underline transition-all text-slate-600 dark:text-slate-400"
+                    <h2 className={`text-4xl md:text-5xl font-bold mb-6 ${c.text}`}>
+                        Ready to Start Your
+                        <br />
+                        <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Recovery Journey?</span>
+                    </h2>
+                    <p className={`text-lg mb-10 max-w-xl mx-auto ${c.textSecondary}`}>
+                        Join thousands of patients who have transformed their rehabilitation experience with PhysioFlow.
+                    </p>
+
+                    <motion.button
+                        whileHover={{ scale: 1.05, y: -3 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={onGetStarted}
+                        className="px-12 py-5 text-slate-900 rounded-2xl text-xl font-bold inline-flex items-center gap-3 mb-8 bg-gradient-to-r from-cyan-500 to-teal-400 shadow-lg shadow-cyan-500/40"
                     >
-                        {link}
-                    </a>
-                ))}
-            </div>
+                        Get Started Now
+                        <span>→</span>
+                    </motion.button>
+
+
+                </motion.div>
+            </section>
+
+            {/* Footer */}
+            <footer className={`py-12 px-4 ${isDark ? 'bg-slate-900' : 'bg-white'} ${c.cardBorder} border-t`}>
+                <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500 to-teal-400">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <span className={`text-xl font-bold ${c.text}`}>
+                            Physio<span className="text-cyan-400">Flow</span>
+                        </span>
+                    </div>
+                    <p className={`text-sm ${c.textSecondary}`}>
+                        © 2026 PhysioFlow. All rights reserved.
+                    </p>
+                    <div className="flex gap-6">
+                        {["Privacy", "Terms", "Contact"].map((link) => (
+                            <a
+                                key={link}
+                                href="#"
+                                className={`text-sm hover:underline transition-all ${c.textSecondary}`}
+                            >
+                                {link}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </footer>
         </div>
-    </footer>
-        </div >
     )
 }
