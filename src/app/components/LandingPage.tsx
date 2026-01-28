@@ -97,23 +97,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         },
     ]
 
-    const testimonials = [
-        {
-            quote: "PhysioFlow transformed my recovery journey. The AI feedback helped me maintain proper form even without a therapist present.",
-            author: "Sarah Mitchell",
-            role: "Knee Surgery Recovery",
-        },
-        {
-            quote: "As a physiotherapist, this platform allows me to monitor my patients' progress remotely while ensuring they exercise correctly.",
-            author: "Dr. James Chen",
-            role: "Senior Physiotherapist",
-        },
-        {
-            quote: "The personalized treatment plan and daily exercises helped me recover from my sports injury 40% faster than expected.",
-            author: "Michael Torres",
-            role: "Professional Athlete",
-        },
-    ]
+
 
     return (
         <div className={`min-h-screen bg-gradient-to-br ${c.bg} transition-colors duration-500`}>
@@ -255,17 +239,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                             </motion.span>
                         </motion.button>
 
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`px-8 py-4 rounded-2xl text-lg font-semibold flex items-center gap-3 hover:shadow-lg transition-all duration-300 ${c.card} ${c.cardBorder} border ${c.text}`}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                            </svg>
-                            Watch Demo
-                        </motion.button>
+
                     </motion.div>
 
                     {/* Trust Badges */}
@@ -461,57 +435,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 </div>
             </section>
 
-            {/* Testimonials */}
-            <section className="py-28 px-4">
-                <div className="max-w-6xl mx-auto">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-16"
-                    >
-                        <span className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-cyan-500/10 text-cyan-400">
-                            TESTIMONIALS
-                        </span>
-                        <h2 className={`text-4xl md:text-5xl font-bold ${c.text}`}>
-                            Trusted by <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Thousands</span>
-                        </h2>
-                    </motion.div>
 
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {testimonials.map((testimonial, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                whileHover={{ y: -5 }}
-                                className={`p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all ${c.card} backdrop-blur-xl ${c.cardBorder} border`}
-                            >
-                                <div className="flex gap-1 mb-5">
-                                    {[...Array(5)].map((_, j) => (
-                                        <svg key={j} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-400">
-                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                        </svg>
-                                    ))}
-                                </div>
-                                <p className={`text-lg italic mb-6 leading-relaxed ${c.textSecondary}`}>
-                                    &quot;{testimonial.quote}&quot;
-                                </p>
-                                <div>
-                                    <p className={`font-bold ${c.text}`}>
-                                        {testimonial.author}
-                                    </p>
-                                    <p className={`text-sm ${c.textSecondary}`}>
-                                        {testimonial.role}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* CTA Section */}
             <section className={`py-28 px-4 ${isDark ? 'bg-slate-800/50' : 'bg-slate-100/50'}`}>
