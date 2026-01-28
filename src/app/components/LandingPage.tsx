@@ -386,144 +386,143 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 </div>
             </section>
 
-<<<<<<< HEAD
-    {/* Testimonials */ }
-    <section className="py-28 px-4">
-        <div className="max-w-6xl mx-auto">
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center mb-16"
-            >
-                <span className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-cyan-500/10 text-cyan-400">
-                    TESTIMONIALS
-                </span>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
-                    Trusted by <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Thousands</span>
-                </h2>
-            </motion.div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-                {testimonials.map((testimonial, i) => (
+            {/* Testimonials */}
+            <section className="py-28 px-4">
+                <div className="max-w-6xl mx-auto">
                     <motion.div
-                        key={i}
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                        whileHover={{ y: -5 }}
-                        className="p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-slate-200 dark:border-white/10 border"
+                        className="text-center mb-16"
                     >
-                        <div className="flex gap-1 mb-5">
-                            {[...Array(5)].map((_, j) => (
-                                <svg key={j} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-400">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                            ))}
-                        </div>
-                        <p className="text-lg italic mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
-                            &quot;{testimonial.quote}&quot;
-                        </p>
-                        <div>
-                            <p className="font-bold text-slate-900 dark:text-white">
-                                {testimonial.author}
-                            </p>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">
-                                {testimonial.role}
-                            </p>
-                        </div>
+                        <span className="inline-block px-4 py-1.5 rounded-full text-sm font-bold tracking-wider mb-6 bg-cyan-500/10 text-cyan-400">
+                            TESTIMONIALS
+                        </span>
+                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
+                            Trusted by <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Thousands</span>
+                        </h2>
                     </motion.div>
-                ))}
-            </div>
-        </div>
-    </section>
 
-    {/* CTA Section */ }
-    <section className="py-28 px-4 bg-slate-100/50 dark:bg-slate-800/50">
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
-        >
-            <motion.div
-                animate={{
-                    boxShadow: [
-                        "0 0 0 0 rgba(6, 182, 212, 0.4)",
-                        "0 0 0 30px rgba(6, 182, 212, 0)",
-                    ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-10 bg-gradient-to-br from-cyan-500 to-teal-400"
-            >
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-            </motion.div>
-
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
-                Ready to Start Your
-                <br />
-                <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Recovery Journey?</span>
-            </h2>
-            <p className="text-lg mb-10 max-w-xl mx-auto text-slate-600 dark:text-slate-400">
-                Join thousands of patients who have transformed their rehabilitation experience with PhysioFlow.
-            </p>
-
-            <motion.button
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onGetStarted}
-                className="px-12 py-5 text-slate-900 rounded-2xl text-xl font-bold inline-flex items-center gap-3 mb-8 bg-gradient-to-r from-cyan-500 to-teal-400 shadow-lg shadow-cyan-500/40"
-            >
-                Get Started Now
-                <span>→</span>
-            </motion.button>
-
-            <div className="flex flex-wrap justify-center gap-6">
-                {["Free 14-day trial", "No credit card", "Cancel anytime"].map((text, i) => (
-                    <span key={i} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-500">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        {text}
-                    </span>
-                ))}
-            </div>
-        </motion.div>
-    </section>
-
-    {/* Footer */ }
-    <footer className="py-12 px-4 bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 border-t">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500 to-teal-400">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                    </svg>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {testimonials.map((testimonial, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                whileHover={{ y: -5 }}
+                                className="p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-slate-200 dark:border-white/10 border"
+                            >
+                                <div className="flex gap-1 mb-5">
+                                    {[...Array(5)].map((_, j) => (
+                                        <svg key={j} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-amber-400">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    ))}
+                                </div>
+                                <p className="text-lg italic mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
+                                    &quot;{testimonial.quote}&quot;
+                                </p>
+                                <div>
+                                    <p className="font-bold text-slate-900 dark:text-white">
+                                        {testimonial.author}
+                                    </p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                        {testimonial.role}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
-                <span className="text-xl font-bold text-slate-900 dark:text-white">
-                    Physio<span className="text-cyan-400">Flow</span>
-                </span>
-            </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-                © 2026 PhysioFlow. All rights reserved.
-            </p>
-            <div className="flex gap-6">
-                {["Privacy", "Terms", "Contact"].map((link) => (
-                    <a
-                        key={link}
-                        href="#"
-                        className="text-sm hover:underline transition-all text-slate-600 dark:text-slate-400"
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-28 px-4 bg-slate-100/50 dark:bg-slate-800/50">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="max-w-4xl mx-auto text-center"
+                >
+                    <motion.div
+                        animate={{
+                            boxShadow: [
+                                "0 0 0 0 rgba(6, 182, 212, 0.4)",
+                                "0 0 0 30px rgba(6, 182, 212, 0)",
+                            ],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-10 bg-gradient-to-br from-cyan-500 to-teal-400"
                     >
-                        {link}
-                    </a>
-                ))}
-            </div>
-        </div>
-    </footer>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </motion.div>
+
+                    <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
+                        Ready to Start Your
+                        <br />
+                        <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Recovery Journey?</span>
+                    </h2>
+                    <p className="text-lg mb-10 max-w-xl mx-auto text-slate-600 dark:text-slate-400">
+                        Join thousands of patients who have transformed their rehabilitation experience with PhysioFlow.
+                    </p>
+
+                    <motion.button
+                        whileHover={{ scale: 1.05, y: -3 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={onGetStarted}
+                        className="px-12 py-5 text-slate-900 rounded-2xl text-xl font-bold inline-flex items-center gap-3 mb-8 bg-gradient-to-r from-cyan-500 to-teal-400 shadow-lg shadow-cyan-500/40"
+                    >
+                        Get Started Now
+                        <span>→</span>
+                    </motion.button>
+
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {["Free 14-day trial", "No credit card", "Cancel anytime"].map((text, i) => (
+                            <span key={i} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-500">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                {text}
+                            </span>
+                        ))}
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* Footer */}
+            <footer className="py-12 px-4 bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 border-t">
+                <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500 to-teal-400">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <span className="text-xl font-bold text-slate-900 dark:text-white">
+                            Physio<span className="text-cyan-400">Flow</span>
+                        </span>
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                        © 2026 PhysioFlow. All rights reserved.
+                    </p>
+                    <div className="flex gap-6">
+                        {["Privacy", "Terms", "Contact"].map((link) => (
+                            <a
+                                key={link}
+                                href="#"
+                                className="text-sm hover:underline transition-all text-slate-600 dark:text-slate-400"
+                            >
+                                {link}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </footer>
         </div >
     )
 }
