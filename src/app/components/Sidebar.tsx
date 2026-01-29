@@ -12,12 +12,15 @@ import {
     Utensils,
     TrendingUp,
     LogOut,
-    UserCircle
+    UserCircle,
+    X
 } from 'lucide-react'
 
 interface SidebarProps {
     user: User | null
     onLogout: () => void
+    mobileOpen?: boolean
+    onMobileClose?: () => void
 }
 
 const menuItems = [
@@ -27,19 +30,27 @@ const menuItems = [
     { name: 'Progress', icon: TrendingUp, href: '/patient?tab=progress' },
 ]
 
-export default function Sidebar({ user, onLogout }: SidebarProps) {
+export default function Sidebar({ user, onLogout, mobileOpen = false, onMobileClose }: SidebarProps) {
     const pathname = usePathname()
 
     return (
-        <aside className="w-64 fixed h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-white/10 flex flex-col z-40 transition-colors duration-300">
+        <aside className={`w-64 fixed top-0 h-[100dvh] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-white/10 flex flex-col z-50 transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+            }`}>
             {/* Header - PhysioFlow Branding */}
-            <div className="p-6 border-b border-slate-200 dark:border-white/10">
+            <div className="p-6 border-b border-slate-200 dark:border-white/10 flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <Activity size={28} className="text-cyan-600 dark:text-cyan-400" />
                     <span className="text-xl font-bold bg-gradient-to-r from-cyan-600 to-teal-500 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent">
                         PhysioFlow
                     </span>
                 </div>
+                {/* Mobile Close Button */}
+                <button
+                    onClick={onMobileClose}
+                    className="md:hidden p-1 text-slate-500 hover:text-red-500 transition-colors"
+                >
+                    <X size={24} />
+                </button>
             </div>
 
             {/* Navigation */}

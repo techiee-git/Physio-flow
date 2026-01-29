@@ -6,7 +6,7 @@ import { getCurrentUser, signOut, User } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 import DoctorProgress from '@/app/components/DoctorProgress'
 import ThemeToggle from '../components/ThemeToggle'
-import { Activity, Users, Dumbbell, ClipboardList, LayoutDashboard, Cloud, BarChart, FileText, CloudUpload, PlayCircle, BookOpen, Utensils, Flame, X } from 'lucide-react'
+import { Activity, Users, Dumbbell, ClipboardList, LayoutDashboard, Cloud, BarChart, FileText, CloudUpload, PlayCircle, BookOpen, Utensils, Flame, X, Phone, Trash2 } from 'lucide-react'
 
 type Tab = 'dashboard' | 'patients' | 'exercises' | 'reports'
 
@@ -265,6 +265,43 @@ export default function DoctorDashboard() {
         }
     }
 
+    const deleteExercise = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (!confirm('Are you sure you want to delete this exercise? This will remove it from all assigned patients.')) return
+
+        try {
+            // 1. Delete dependencies first
+            // Delete assignments
+            const { error: assignError } = await supabase
+                .from('patient_exercises')
+                .delete()
+                .eq('exercise_id', id)
+
+            if (assignError) console.error('Error deleting assignments:', assignError)
+
+            // Delete templates
+            const { error: templateError } = await supabase
+                .from('exercise_templates')
+                .delete()
+                .eq('exercise_id', id)
+
+            if (templateError) console.error('Error deleting templates:', templateError)
+
+            // 2. Delete the exercise
+            const { error } = await supabase
+                .from('exercises')
+                .delete()
+                .eq('id', id)
+
+            if (error) throw error
+
+            setExercises(exercises.filter(e => e.id !== id))
+        } catch (error) {
+            console.error('Error deleting exercise:', error)
+            alert('Failed to delete exercise. It might be in use.')
+        }
+    }
+
     // Process video to extract pose template
     const processVideoForTemplate = async (exerciseId: string, videoUrl: string): Promise<boolean> => {
         try {
@@ -416,9 +453,9 @@ Dinner:
 
             {/* Sidebar */}
             <aside className={`
-                fixed md:relative z-50 h-screen
+                fixed md:sticky md:top-0 z-50 h-[100dvh]
                 w-64 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-r border-slate-200 dark:border-white/10 
-                flex flex-col transition-all duration-300
+                flex flex-col transition-all duration-300 shrink-0
                 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
             `}>
                 <div className="p-6 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
@@ -475,7 +512,7 @@ Dinner:
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-0 p-4 sm:p-6 lg:p-8 overflow-auto relative transition-colors duration-500 min-h-screen">
+            <main className="flex-1 md:ml-0 p-4 sm:p-6 lg:p-8 overflow-auto relative transition-colors duration-500 min-h-[100dvh]">
                 {/* Mobile Header */}
                 <div className="md:hidden flex items-center justify-between mb-4 pb-4 border-b border-slate-200 dark:border-white/10">
                     <button
@@ -724,7 +761,7 @@ Dinner:
 
                         {patients.length === 0 ? (
                             <div className="p-8 bg-slate-800/80 backdrop-blur-xl border border-white/10 rounded-2xl text-center">
-                                <div className="text-6xl mb-4">👥</div>
+                                <Users size={48} className="mb-4 text-slate-600" />
                                 <h3 className="text-xl font-semibold mb-2">No Patients Yet</h3>
                                 <p className="text-slate-400">Patients will appear here once they register and you can assign exercises to them</p>
                             </div>
@@ -750,8 +787,8 @@ Dinner:
                                             {patient.injury && (
                                                 <div className="mb-4">
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-500/20 border border-red-500/30 rounded-lg text-sm">
-                                                        <span className="text-red-400">🩹</span>
-                                                        <span className="text-red-300 font-medium">{patient.injury}</span>
+                                                        <Activity size={14} className="text-red-400" />
+                                                        <span className="text-red-300 font-medium capitalize">Injury: {patient.injury}</span>
                                                     </span>
                                                 </div>
                                             )}
@@ -766,12 +803,12 @@ Dinner:
                                             {/* Stats */}
                                             <div className="flex items-center gap-4 mb-4 text-sm">
                                                 <div className="flex items-center gap-2 px-3 py-1.5 bg-cyan-500/10 rounded-lg">
-                                                    <span className="text-cyan-400">🏋️</span>
+                                                    <Dumbbell size={14} className="text-cyan-400" />
                                                     <span className="text-cyan-300">{patientAssignments.length} exercises</span>
                                                 </div>
                                                 {patient.phone && (
                                                     <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg">
-                                                        <span>📱</span>
+                                                        <Phone size={14} className="text-slate-400" />
                                                         <span className="text-slate-400">{patient.phone}</span>
                                                     </div>
                                                 )}
@@ -832,7 +869,7 @@ Dinner:
                                                     }}
                                                     className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl font-semibold hover:bg-white/10 transition-all flex items-center justify-center"
                                                 >
-                                                    Assign Diet
+                                                    {patient.diet_plan ? 'Edit Diet' : 'Assign Diet'}
                                                 </button>
                                             </div>
                                         </div>
@@ -859,7 +896,7 @@ Dinner:
 
                             {exercises.length === 0 ? (
                                 <div className="p-8 bg-slate-800/80 backdrop-blur-xl border border-white/10 rounded-2xl text-center">
-                                    <div className="text-6xl mb-4">🏋️</div>
+                                    <Dumbbell size={48} className="mb-4 text-slate-600" />
                                     <p className="text-slate-400 mb-4">No exercises in library</p>
                                     <button
                                         onClick={() => setShowAddExercise(true)}
@@ -882,17 +919,28 @@ Dinner:
                                                     />
                                                 </div>
                                             )}
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="text-3xl">🏋️</div>
-                                                <div>
-                                                    <h3 className="font-semibold">{exercise.name}</h3>
-                                                    <span className={`text-xs px-2 py-0.5 rounded-full ${exercise.difficulty === 'easy' ? 'bg-green-500/20 text-green-400' :
-                                                        exercise.difficulty === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                            'bg-red-500/20 text-red-400'
-                                                        }`}>
-                                                        {exercise.difficulty}
-                                                    </span>
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-cyan-500/10 rounded-lg">
+                                                        <Dumbbell size={24} className="text-cyan-400" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-semibold">{exercise.name}</h3>
+                                                        <span className={`text-xs px-2 py-0.5 rounded-full ${exercise.difficulty === 'easy' ? 'bg-green-500/20 text-green-400' :
+                                                            exercise.difficulty === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                                'bg-red-500/20 text-red-400'
+                                                            }`}>
+                                                            {exercise.difficulty}
+                                                        </span>
+                                                    </div>
                                                 </div>
+                                                <button
+                                                    onClick={(e) => deleteExercise(exercise.id, e)}
+                                                    className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-red-400 transition-colors"
+                                                    title="Delete Exercise"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
                                             </div>
                                             <p className="text-slate-400 text-sm mb-3">{exercise.description || 'No description'}</p>
                                             <p className="text-xs text-slate-500">Duration: {exercise.duration_seconds}s</p>

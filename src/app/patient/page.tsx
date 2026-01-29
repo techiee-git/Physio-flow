@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase'
 import Sidebar from '../components/Sidebar'
 import ThemeToggle from '../components/ThemeToggle'
 import Link from 'next/link'
-import { FileText, Flame, BarChart3, Phone } from 'lucide-react'
+import { FileText, Flame, BarChart3, Phone, Menu, Activity } from 'lucide-react'
 
 interface Exercise {
     id: string
@@ -40,6 +40,7 @@ function PatientDashboardContent() {
     const [doctor, setDoctor] = useState<{ name: string; email: string; phone: string } | null>(null)
     const [dietPlan, setDietPlan] = useState<string | null>(null)
     const [progress, setProgress] = useState({ completed: 0, total: 0 })
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     useEffect(() => {
         checkAuth()
@@ -262,8 +263,8 @@ function PatientDashboardContent() {
                                         </div>
                                     </div>
                                     <span className={`px-3 py-1 rounded-lg text-xs font-bold ${assignment.status === 'completed'
-                                            ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                                            : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                                        ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                                        : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                         }`}>
                                         {assignment.status === 'completed' ? 'Completed' : 'Pending'}
                                     </span>
@@ -281,12 +282,40 @@ function PatientDashboardContent() {
     )
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300 font-sans">
-            <Sidebar user={user} onLogout={handleLogout} />
+        <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white transition-colors duration-300 font-sans">
+            {/* Mobile Menu Overlay */}
+            {mobileMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    onClick={() => setMobileMenuOpen(false)}
+                />
+            )}
 
-            <main className="ml-64 p-8 transition-all duration-300">
-                {/* Top Header Area */}
-                <div className="flex justify-between items-start mb-8">
+            <Sidebar
+                user={user}
+                onLogout={handleLogout}
+                mobileOpen={mobileMenuOpen}
+                onMobileClose={() => setMobileMenuOpen(false)}
+            />
+
+            <main className="ml-0 md:ml-64 p-4 md:p-8 transition-all duration-300">
+                {/* Mobile Header */}
+                <div className="md:hidden flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-white/10">
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="p-2 bg-slate-100 dark:bg-white/10 rounded-lg"
+                    >
+                        <Menu size={24} />
+                    </button>
+                    <div className="flex items-center gap-2">
+                        <Activity size={24} className="text-cyan-600 dark:text-cyan-400" />
+                        <span className="font-bold text-cyan-600 dark:text-cyan-400">PhysioFlow</span>
+                    </div>
+                    <ThemeToggle />
+                </div>
+
+                {/* Desktop Header Area (Hidden on mobile if redundant, but here we keep it adaptable) */}
+                <div className="flex flex-col md:flex-row justify-between items-start mb-6 md:mb-8 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold mb-1">
                             {activeTab === 'dashboard' && `Welcome Back, ${user?.name?.split(' ')[0]}!`}
@@ -299,7 +328,9 @@ function PatientDashboardContent() {
                             {activeTab === 'progress' && 'Visualize your improvement over time.'}
                         </p>
                     </div>
-                    <ThemeToggle />
+                    <div className="hidden md:block">
+                        <ThemeToggle />
+                    </div>
                 </div>
 
                 {activeTab === 'dashboard' && renderDashboard()}
