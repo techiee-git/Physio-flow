@@ -6,7 +6,7 @@ import { getCurrentUser, signOut, User } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 import DoctorProgress from '@/app/components/DoctorProgress'
 import ThemeToggle from '../components/ThemeToggle'
-import { Activity, Users, Dumbbell, ClipboardList, LayoutDashboard, Cloud, BarChart, FileText, CloudUpload, PlayCircle, BookOpen } from 'lucide-react'
+import { Activity, Users, Dumbbell, ClipboardList, LayoutDashboard, Cloud, BarChart, FileText, CloudUpload, PlayCircle, BookOpen, Utensils, Flame } from 'lucide-react'
 
 type Tab = 'dashboard' | 'patients' | 'exercises' | 'reports'
 
@@ -26,6 +26,7 @@ interface Patient {
     injury: string
     age: number
     phone: string
+    diet_plan?: string
 }
 
 interface PatientExercise {
@@ -58,8 +59,14 @@ export default function DoctorDashboard() {
     // Form states
     const [newExercise, setNewExercise] = useState({ name: '', description: '', duration_seconds: 60, difficulty: 'medium', video_url: '' })
     const [assignForm, setAssignForm] = useState({ exercise_name: '', reps_per_set: 10, sets: 3, notes: '' })
+
     const [assignVideoFile, setAssignVideoFile] = useState<File | null>(null)
     const [assigningExercise, setAssigningExercise] = useState(false)
+
+    // Diet Plan states
+    const [showAssignDiet, setShowAssignDiet] = useState(false)
+    const [dietPlanContent, setDietPlanContent] = useState('')
+    const [savingDiet, setSavingDiet] = useState(false)
 
     // Video upload states
     const [uploadingVideo, setUploadingVideo] = useState(false)
@@ -239,6 +246,49 @@ export default function DoctorDashboard() {
         await supabase.from('patient_exercises').delete().eq('id', assignmentId)
         fetchData()
     }
+
+    const saveDietPlan = async () => {
+        if (!selectedPatient) return
+        setSavingDiet(true)
+        
+        const { error } = await supabase
+            .from('users')
+            .update({ diet_plan: dietPlanContent })
+            .eq('id', selectedPatient.id)
+
+        if (!error) {
+            setShowAssignDiet(false)
+            setDietPlanContent('')
+            setSelectedPatient(null)
+            fetchData() 
+        } else {
+            console.error('Error saving diet plan:', error)
+        }
+        setSavingDiet(false)
+    }
+
+    const indianDietTemplate = `Breakfast:
+- 2 Idli with Sambar / 1 cup Upma with vegetables
+- 1 cup Tea/Coffee (low sugar)
+
+Mid-Morning:
+- 1 Fruit (Apple/Papaya)
+- Handful of almonds
+
+Lunch:
+- 2 Roti / 1 cup Brown Rice
+- 1 cup Dal (Lentils)
+- 1 cup Sabzi (Seasonal vegetable)
+- Salad and Curd
+
+Evening Snack:
+- Roasted Chickpeas / Makhana
+- Green Tea
+
+Dinner:
+- 1-2 Roti
+- Mixed Vegetable Curry / Paneer Bhurji
+- 1 cup Turmeric Milk (before bed)`
 
     if (loading) {
         return (
@@ -616,15 +666,28 @@ export default function DoctorDashboard() {
                                             )}
 
                                             {/* Action Button */}
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedPatient(patient)
-                                                    setShowAssignExercise(true)
-                                                }}
-                                                className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2"
-                                            >
-                                                <span>📋</span> Assign Exercise
-                                            </button>
+                                            {/* Action Buttons */}
+                                            <div className="flex flex-col gap-3">
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedPatient(patient)
+                                                        setShowAssignExercise(true)
+                                                    }}
+                                                    className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all flex items-center justify-center"
+                                                >
+                                                    Assign Exercise
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedPatient(patient)
+                                                        setDietPlanContent(patient.diet_plan || '') 
+                                                        setShowAssignDiet(true)
+                                                    }}
+                                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl font-semibold hover:bg-white/10 transition-all flex items-center justify-center"
+                                                >
+                                                    Assign Diet
+                                                </button>
+                                            </div>
                                         </div>
                                     )
                                 })}
@@ -931,6 +994,54 @@ export default function DoctorDashboard() {
                                     className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {assigningExercise ? 'Uploading...' : 'Assign'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* Assign Diet Modal */}
+            {
+                showAssignDiet && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+                        <div className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-2xl">
+                            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                                <span className="text-3xl">🥗</span> Assign Diet Plan
+                            </h2>
+                            <p className="text-slate-400 mb-6">Create a nutrition plan for <span className="text-white font-bold">{selectedPatient?.name}</span></p>
+
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-sm font-medium">Diet Details</label>
+                                    <button 
+                                        onClick={() => setDietPlanContent(indianDietTemplate)}
+                                        className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                                    >
+                                        <Flame size={14} /> Use Indian Diet Template
+                                    </button>
+                                </div>
+                                <textarea
+                                    value={dietPlanContent}
+                                    onChange={e => setDietPlanContent(e.target.value)}
+                                    className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500 min-h-[300px] font-mono text-sm"
+                                    placeholder="Enter breakfast, lunch, dinner details..."
+                                />
+                            </div>
+
+                            <div className="flex gap-4 mt-8">
+                                <button
+                                    onClick={() => setShowAssignDiet(false)}
+                                    className="flex-1 px-4 py-3 border border-white/20 rounded-xl hover:bg-white/5 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={saveDietPlan}
+                                    disabled={savingDiet}
+                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+                                >
+                                    {savingDiet ? 'Saving...' : 'Save Diet Plan'}
                                 </button>
                             </div>
                         </div>
