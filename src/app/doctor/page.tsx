@@ -444,13 +444,11 @@ Dinner:
     }
 
     return (
-
-<<<<<<< HEAD
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-900 dark:text-white transition-colors duration-500 font-sans">
-            <Sidebar 
-                user={user} 
-                onLogout={handleLogout} 
-                isOpen={isSidebarOpen} 
+            <Sidebar
+                user={user}
+                onLogout={handleLogout}
+                isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
                 items={doctorMenuItems}
                 activeTab={activeTab}
@@ -459,29 +457,8 @@ Dinner:
             {/* Mobile Header */}
             <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                     <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+                    <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-slate-600 dark:text-slate-300">
                         <Menu size={24} />
-=======
-            {/* Sidebar */}
-            <aside className={`
-                fixed md:sticky md:top-0 z-50 h-[100dvh]
-                w-64 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-r border-slate-200 dark:border-white/10 
-                flex flex-col transition-all duration-300 shrink-0
-                ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-            `}>
-                <div className="p-6 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Activity size={28} className="text-cyan-600 dark:text-cyan-400" />
-                        <span className="text-xl font-bold bg-gradient-to-r from-cyan-600 to-teal-500 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent">
-                            PhysioFlow
-                        </span>
-                    </div>
-                    <button
-                        className="md:hidden p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
-                        <X size={20} />
->>>>>>> 2bfe82e3c3b13be462b72ddce8327eefb3fd7d4a
                     </button>
                     <span className="font-bold text-lg bg-gradient-to-r from-cyan-600 to-teal-500 dark:from-cyan-400 dark:to-teal-400 bg-clip-text text-transparent">
                         PhysioFlow
@@ -489,6 +466,7 @@ Dinner:
                 </div>
                 <ThemeToggle />
             </div>
+
 
 
             {/* Main Content */}
@@ -881,12 +859,6 @@ Dinner:
                                                     />
                                                 </div>
                                             )}
-<<<<<<< HEAD
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="text-3xl">🏋️</div>
-                                                <div>
-                                                    <h3 className="font-semibold">{exercise.name}</h3>
-=======
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="p-2 bg-cyan-500/10 rounded-lg">
@@ -901,7 +873,6 @@ Dinner:
                                                             {exercise.difficulty}
                                                         </span>
                                                     </div>
->>>>>>> 2bfe82e3c3b13be462b72ddce8327eefb3fd7d4a
                                                 </div>
                                                 <button
                                                     onClick={(e) => deleteExercise(exercise.id, e)}
@@ -927,129 +898,128 @@ Dinner:
                         <DoctorReports patients={patients} assignments={assignments} exercises={exercises} />
                     )
                 }
-            </main >
+            </main>
 
             {/* Add Exercise Modal */}
-            {
-                showAddExercise && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-                        <div className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-md">
-                            <h2 className="text-2xl font-bold mb-6">Add New Exercise</h2>
+            {showAddExercise && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-slate-800 border border-white/10 rounded-2xl p-8 w-full max-w-md">
+                        <h2 className="text-2xl font-bold mb-6">Add New Exercise</h2>
 
-                            <div className="space-y-4">
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Exercise Name</label>
+                                <input
+                                    type="text"
+                                    value={newExercise.name}
+                                    onChange={e => setNewExercise({ ...newExercise, name: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500"
+                                    placeholder="e.g., Shoulder Rotation"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Description</label>
+                                <textarea
+                                    value={newExercise.description}
+                                    onChange={e => setNewExercise({ ...newExercise, description: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500"
+                                    placeholder="Describe the exercise..."
+                                    rows={3}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Exercise Name</label>
+                                    <label className="block text-sm font-medium mb-2">Duration (sec)</label>
                                     <input
-                                        type="text"
-                                        value={newExercise.name}
-                                        onChange={e => setNewExercise({ ...newExercise, name: e.target.value })}
+                                        type="number"
+                                        value={newExercise.duration_seconds}
+                                        onChange={e => setNewExercise({ ...newExercise, duration_seconds: parseInt(e.target.value) })}
                                         className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500"
-                                        placeholder="e.g., Shoulder Rotation"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Description</label>
-                                    <textarea
-                                        value={newExercise.description}
-                                        onChange={e => setNewExercise({ ...newExercise, description: e.target.value })}
+                                    <label className="block text-sm font-medium mb-2">Difficulty</label>
+                                    <select
+                                        value={newExercise.difficulty}
+                                        onChange={e => setNewExercise({ ...newExercise, difficulty: e.target.value })}
                                         className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500"
-                                        placeholder="Describe the exercise..."
-                                        rows={3}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2">Duration (sec)</label>
-                                        <input
-                                            type="number"
-                                            value={newExercise.duration_seconds}
-                                            onChange={e => setNewExercise({ ...newExercise, duration_seconds: parseInt(e.target.value) })}
-                                            className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2">Difficulty</label>
-                                        <select
-                                            value={newExercise.difficulty}
-                                            onChange={e => setNewExercise({ ...newExercise, difficulty: e.target.value })}
-                                            className="w-full px-4 py-3 bg-slate-700 border border-white/10 rounded-xl focus:outline-none focus:border-cyan-500"
-                                        >
-                                            <option value="easy">Easy</option>
-                                            <option value="medium">Medium</option>
-                                            <option value="hard">Hard</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Exercise Video</label>
-                                    <div className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-cyan-500/50 transition-all">
-                                        <input
-                                            type="file"
-                                            accept="video/*"
-                                            onChange={e => {
-                                                const file = e.target.files?.[0]
-                                                if (file) setVideoFile(file)
-                                            }}
-                                            className="hidden"
-                                            id="video-upload"
-                                        />
-                                        <label htmlFor="video-upload" className="cursor-pointer">
-                                            {videoFile ? (
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <span className="text-2xl">🎬</span>
-                                                    <span className="text-cyan-400">{videoFile.name}</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.preventDefault()
-                                                            setVideoFile(null)
-                                                        }}
-                                                        className="text-red-400 hover:text-red-300 ml-2"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div>
-                                                    <span className="text-3xl block mb-2">📹</span>
-                                                    <span className="text-slate-400">Click to upload video</span>
-                                                    <p className="text-xs text-slate-500 mt-1">MP4, WebM, MOV (max 50MB)</p>
-                                                </div>
-                                            )}
-                                        </label>
-                                    </div>
-                                    {uploadingVideo && (
-                                        <div className="mt-3">
-                                            <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-gradient-to-r from-cyan-500 to-teal-500 transition-all duration-300"
-                                                    style={{ width: `${uploadProgress}%` }}
-                                                />
-                                            </div>
-                                            <p className="text-xs text-slate-400 mt-1">Uploading... {uploadProgress}%</p>
-                                        </div>
-                                    )}
+                                    >
+                                        <option value="easy">Easy</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="hard">Hard</option>
+                                    </select>
                                 </div>
                             </div>
-
-                            <div className="flex gap-4 mt-8">
-                                <button
-                                    onClick={() => setShowAddExercise(false)}
-                                    className="flex-1 px-4 py-3 border border-white/20 rounded-xl hover:bg-white/5 transition-all"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={addExercise}
-                                    disabled={uploadingVideo}
-                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {uploadingVideo ? 'Uploading...' : 'Add Exercise'}
-                                </button>
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Exercise Video</label>
+                                <div className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-cyan-500/50 transition-all">
+                                    <input
+                                        type="file"
+                                        accept="video/*"
+                                        onChange={e => {
+                                            const file = e.target.files?.[0]
+                                            if (file) setVideoFile(file)
+                                        }}
+                                        className="hidden"
+                                        id="video-upload"
+                                    />
+                                    <label htmlFor="video-upload" className="cursor-pointer">
+                                        {videoFile ? (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <span className="text-2xl">🎬</span>
+                                                <span className="text-cyan-400">{videoFile.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        setVideoFile(null)
+                                                    }}
+                                                    className="text-red-400 hover:text-red-300 ml-2"
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <span className="text-3xl block mb-2">📹</span>
+                                                <span className="text-slate-400">Click to upload video</span>
+                                                <p className="text-xs text-slate-500 mt-1">MP4, WebM, MOV (max 50MB)</p>
+                                            </div>
+                                        )}
+                                    </label>
+                                </div>
+                                {uploadingVideo && (
+                                    <div className="mt-3">
+                                        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-cyan-500 to-teal-500 transition-all duration-300"
+                                                style={{ width: `${uploadProgress}%` }}
+                                            />
+                                        </div>
+                                        <p className="text-xs text-slate-400 mt-1">Uploading... {uploadProgress}%</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        <div className="flex gap-4 mt-8">
+                            <button
+                                onClick={() => setShowAddExercise(false)}
+                                className="flex-1 px-4 py-3 border border-white/20 rounded-xl hover:bg-white/5 transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={addExercise}
+                                disabled={uploadingVideo}
+                                className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {uploadingVideo ? 'Uploading...' : 'Add Exercise'}
+                            </button>
+                        </div>
                     </div>
-                )
+                </div>
+            )
             }
 
             {/* Assign Exercise Modal */}

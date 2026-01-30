@@ -51,6 +51,12 @@ export default function ExercisePage() {
     const poseEngineRef = useRef<any>(null)
     const referencePoseEngineRef = useRef<any>(null)
     const animationRef = useRef<number | null>(null)
+    const repCountRef = useRef(0)
+
+    // Sync ref with state for use in closures
+    useEffect(() => {
+        repCountRef.current = repCount
+    }, [repCount])
 
     useEffect(() => {
         checkAuth()
@@ -242,13 +248,19 @@ export default function ExercisePage() {
                                         phaseSequence.push(currentPhase)
                                         lastPhase = currentPhase
 
+                                        // Safety: clear if too long to prevent stale data
+                                        if (phaseSequence.length > 20) {
+                                            phaseSequence = phaseSequence.slice(-5)
+                                        }
+
                                         // Check if rep sequence is complete
                                         const repSeq = exerciseTemplate.repSequence || ['start', 'peak', 'start']
                                         if (phaseSequence.length >= repSeq.length) {
                                             const tail = phaseSequence.slice(-repSeq.length)
                                             if (JSON.stringify(tail) === JSON.stringify(repSeq)) {
                                                 // Rep completed!
-                                                if (!repCounted && repCount < targetReps) {
+                                                const currentRepCount = repCountRef.current
+                                                if (!repCounted && currentRepCount < targetReps) {
                                                     setRepCount(prev => prev + 1)
                                                     repCounted = true
                                                     if (renderer) renderer.triggerCelebration()

@@ -113,7 +113,13 @@ export function identifyPhases(keyframes: KeyframeData[]): PhaseDefinition[] {
     if (keyframes.length === 0) return []
 
     const phases: PhaseDefinition[] = []
-    const angleNames = Object.keys(keyframes[0]?.angles || {})
+
+    // Collect specific angle names from ALL keyframes (not just the first one)
+    const allAngleNames = new Set<string>()
+    keyframes.forEach(kf => {
+        Object.keys(kf.angles).forEach(name => allAngleNames.add(name))
+    })
+    const angleNames = Array.from(allAngleNames)
 
     // Find ALL angles that change significantly (more than 20 degrees)
     const SIGNIFICANT_CHANGE_THRESHOLD = 20
@@ -174,27 +180,38 @@ export function identifyPhases(keyframes: KeyframeData[]): PhaseDefinition[] {
     }
 
     const primaryStats = angleStats[primaryAngle]
-    if (!primaryStats) return []
 
-    // Create phases with ALL active angles included
-    // Start phase = position at min angle of primary
-    // Peak phase = position at max angle of primary
-    const startFrame = primaryStats.minFrame
-    const peakFrame = primaryStats.maxFrame
+    // Fallback: if no stats, use first and last keyframes
+    let startFrame = keyframes[0]
+    let peakFrame = keyframes[keyframes.length - 1]
 
-    // Build angle requirements for each phase including ONLY the active angles
+    if (primaryStats) {
+        startFrame = primaryStats.minFrame
+        peakFrame = primaryStats.maxFrame
+    } else {
+        console.log('No primary stats found, using first and last frames as fallback')
+    }
+
+    // Build angle requirements for each phase - use ALL angles from the frame (not just active)
     const startAngles: Record<string, number> = {}
     const peakAngles: Record<string, number> = {}
 
-    for (const angleName of activeAngles) {
+    // Include all available angles from the frames
+    for (const angleName of Object.keys(startFrame.angles)) {
         if (startFrame.angles[angleName] !== undefined) {
             startAngles[angleName] = startFrame.angles[angleName]
         }
+    }
+    for (const angleName of Object.keys(peakFrame.angles)) {
         if (peakFrame.angles[angleName] !== undefined) {
             peakAngles[angleName] = peakFrame.angles[angleName]
         }
     }
 
+    console.log('Start frame angles:', Object.keys(startFrame.angles), startFrame.angles)
+    console.log('Peak frame angles:', Object.keys(peakFrame.angles), peakFrame.angles)
+    console.log('startAngles object:', startAngles)
+    console.log('peakAngles object:', peakAngles)
     // Determine order based on timestamp
     if (startFrame.timestamp < peakFrame.timestamp) {
         phases.push({
